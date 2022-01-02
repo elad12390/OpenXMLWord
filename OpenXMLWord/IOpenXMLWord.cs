@@ -25,12 +25,12 @@ namespace OpenXMLWord
     {
         IParagraphCreation AppendChild<T>(T newChild) where T : OpenXmlElement;
         
-        IParagraphCreation CreateImage(MainDocumentPart mainPart, string imageUrl, ImagePartType imageType, OpenXmlUtils.ImageOptions ops = null)
-            => AppendChild(IOpenXMLUtils.CreateImage(mainPart, imageUrl, imageType, ops));
+        IParagraphCreation CreateImage(MainDocumentPart mainPart, string imageUrl, ImagePartType imageType, ImageOptions ops = null)
+            => AppendChild(IOpenXMLWord.CreateImage(mainPart, imageUrl, imageType, ops));
         
         OpenXmlElement EndParagraph();
         
-        IParagraphCreation ApplyStyle(WordprocessingDocument wordDocument, OpenXmlUtils.StyleOptions styleOptions);
+        IParagraphCreation ApplyStyle(WordprocessingDocument wordDocument, StyleOptions styleOptions);
         
         IParagraphCreation CreateText(string text);
         
@@ -42,31 +42,31 @@ namespace OpenXMLWord
         
     }
 
-    public interface IOpenXMLUtils
+    public interface IOpenXMLWord
     {
-        public static Run CreateImage(MainDocumentPart mainPart, string imageUrl, ImagePartType imageType, OpenXmlUtils.ImageOptions ops = null) =>
-            OpenXmlUtils.CreateImage(mainPart, imageUrl, imageType, ops);
+        public static Run CreateImage(MainDocumentPart mainPart, string imageUrl, ImagePartType imageType, ImageOptions ops = null) =>
+            OpenXMLWord.CreateImage(mainPart, imageUrl, imageType, ops);
 
-        static Header AddHeader(MainDocumentPart mainDocumentPart) => OpenXmlUtils.AddHeader(mainDocumentPart);
+        static Header AddHeader(MainDocumentPart mainDocumentPart) => OpenXMLWord.AddHeader(mainDocumentPart);
 
-        static Footer AddFooter(MainDocumentPart mainDocumentPart) => OpenXmlUtils.AddFooter(mainDocumentPart);
+        static Footer AddFooter(MainDocumentPart mainDocumentPart) => OpenXMLWord.AddFooter(mainDocumentPart);
 
         static void SetContentControls(OpenXmlElement element, Dictionary<string, string> tagValueDictionary) =>
-            OpenXmlUtils.SetContentControls(element, tagValueDictionary);
+            OpenXMLWord.SetContentControls(element, tagValueDictionary);
 
         static void SetContentControlImage(WordprocessingDocument doc, OpenXmlElement elm, string tag, ImagePartType imageType, FileStream fileStream) =>
-            OpenXmlUtils.SetContentControlImage(doc, elm, tag, imageType, fileStream);
+            OpenXMLWord.SetContentControlImage(doc, elm, tag, imageType, fileStream);
 
         static void SetContentControl(OpenXmlElement elm, string tag, string value) =>
-            OpenXmlUtils.SetContentControl(elm, tag, value);
+            OpenXMLWord.SetContentControl(elm, tag, value);
 
         static (Table newTable, Table oldTable) CloneTableByTitle(OpenXmlElement element, string title) =>
-            OpenXmlUtils.CloneTableByTitle(element, title);
+            OpenXMLWord.CloneTableByTitle(element, title);
 
         static Table FindTableByTitle(OpenXmlElement element, string title) =>
-            OpenXmlUtils.FindTableByTitle(element, title);
+            OpenXMLWord.FindTableByTitle(element, title);
 
         static void SetTableContentRows(OpenXmlElement element, string tableTitle, List<Dictionary<string, string>> tableRows, int? maxRows = null) =>
-            OpenXmlUtils.SetTableContentRows(element, tableTitle, tableRows, maxRows);
+            OpenXMLWord.SetTableContentRows(element, tableTitle, tableRows, maxRows);
     }
 }

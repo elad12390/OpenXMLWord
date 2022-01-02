@@ -34,7 +34,7 @@ namespace OpenXMLWord
         public static T Apply<T>(this bool? val, T newVal) where T : class
             => val.HasValue && val.Value ? newVal : null;
 
-        public static (MainDocumentPart mainPart, Body body, Header header, Footer footer) Initialize(this WordprocessingDocument doc, OpenXmlUtils.DocumentOptions options = null)
+        public static (MainDocumentPart mainPart, Body body, Header header, Footer footer) Initialize(this WordprocessingDocument doc, DocumentOptions options = null)
         {
             // Add a main document part. 
             var mainPart = doc.AddMainDocumentPart();
@@ -46,38 +46,38 @@ namespace OpenXMLWord
             // Depends on body so need to come after creating the body
             Header header = null;
             if (options?.CreateHeader == true)
-                header = IOpenXMLUtils.AddHeader(mainPart);
+                header = IOpenXMLWord.AddHeader(mainPart);
             
             Footer footer = null;
             if (options?.CreateFooter == true)
-                footer = IOpenXMLUtils.AddFooter(mainPart);
+                footer = IOpenXMLWord.AddFooter(mainPart);
 
             return (mainPart, body, header, footer);
         }
         
         public static (Table newTable, Table oldTable) CloneTableByTitle(this OpenXmlElement element, string title) =>
-            IOpenXMLUtils.CloneTableByTitle(element, title);
+            IOpenXMLWord.CloneTableByTitle(element, title);
 
         public static Table FindTableByTitle(this OpenXmlElement element, string title) =>
-            IOpenXMLUtils.FindTableByTitle(element, title);
+            IOpenXMLWord.FindTableByTitle(element, title);
 
         public static void SetContentControl(this OpenXmlElement element, string tag, string value) =>
-            IOpenXMLUtils.SetContentControl(element, tag, value);
+            IOpenXMLWord.SetContentControl(element, tag, value);
 
         public static void SetContentControls(this OpenXmlElement element, Dictionary<string, string> tagValueDictionary) =>
-            IOpenXMLUtils.SetContentControls(element, tagValueDictionary);
+            IOpenXMLWord.SetContentControls(element, tagValueDictionary);
 
         public static void SetTableContentRows(this OpenXmlElement element, string tableTitle, List<Dictionary<string, string>> tableRows, int? maxRows = null) =>
-            IOpenXMLUtils.SetTableContentRows(element, tableTitle, tableRows, maxRows);
+            IOpenXMLWord.SetTableContentRows(element, tableTitle, tableRows, maxRows);
 
         public static void SetContentControlImage(this OpenXmlElement elm, WordprocessingDocument doc, string tag, ImagePartType imageType, FileStream fileStream) =>
-            IOpenXMLUtils.SetContentControlImage(doc, elm, tag, imageType, fileStream);
+            IOpenXMLWord.SetContentControlImage(doc, elm, tag, imageType, fileStream);
 
         public static Body Body(this WordprocessingDocument wordDocument) => wordDocument?.MainDocumentPart?.Document.Body;
 
-        public static Header AddHeader(this MainDocumentPart mainDocumentPart) => OpenXmlUtils.AddHeader(mainDocumentPart);
+        public static Header AddHeader(this MainDocumentPart mainDocumentPart) => OpenXMLWord.AddHeader(mainDocumentPart);
 
-        public static Footer AddFooter(this MainDocumentPart mainDocumentPart) => OpenXmlUtils.AddFooter(mainDocumentPart);
+        public static Footer AddFooter(this MainDocumentPart mainDocumentPart) => OpenXMLWord.AddFooter(mainDocumentPart);
         
         public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
         {

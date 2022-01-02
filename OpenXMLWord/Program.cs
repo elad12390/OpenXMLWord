@@ -20,7 +20,7 @@ namespace OpenXMLWord
         private static void CreateDocumentFromTemplateExample()
         {
             // Create a document by supplying the filepath. 
-            using var wordDocument = WordprocessingDocument.CreateFromTemplate("D:/Work/Wanzy/8.dotx");
+            using var wordDocument = WordprocessingDocument.CreateFromTemplate("Path/To/Template");
             var tableRows = new List<Dictionary<string, string>>();
             tableRows.AddRange(Enumerable.Repeat(new Dictionary<string, string>()
             {
@@ -28,16 +28,16 @@ namespace OpenXMLWord
                 { "FieldValue", string.Join(' ', GetNRandomStrings(10)) },
             }, 100).ToList());
             wordDocument.Body().SetTableContentRows("test", tableRows, maxRows: 2);
-            IOpenXMLUtils.SetContentControls(wordDocument.Body(), new Dictionary<string, string>
+            IOpenXMLWord.SetContentControls(wordDocument.Body(), new Dictionary<string, string>
             {
                 {"PersonalWords", string.Join(' ', GetNRandomStrings(25))},
-                {"StudentName", "Elad ben haim"}
+                {"StudentName", "Elad meow"}
             });
             
-            using (var f = File.OpenRead("D:/Work/Wanzy/test.png"))
+            using (var f = File.OpenRead("Path/To/File"))
                 wordDocument.Body().SetContentControlImage(wordDocument, tag: "Pic1", imageType:ImagePartType.Png, fileStream: f);
             
-            using (var f = File.OpenRead("D:/Work/Wanzy/test2.png"))
+            using (var f = File.OpenRead("Path/To/File"))
                 wordDocument.Body().SetContentControlImage(wordDocument, tag: "Pic2", imageType:ImagePartType.Png, fileStream: f);
             wordDocument.SaveAs("./Test.docx");
         }
@@ -85,7 +85,7 @@ namespace OpenXMLWord
             body
                 .CreateParagraph()
                 .Align(JustificationValues.Center)
-                .ApplyStyle(wordDocument, new OpenXmlUtils.StyleOptions
+                .ApplyStyle(wordDocument, new StyleOptions
                 {
                     StyleId = "cool_new_style",
                     StyleName = "Cool Style",
@@ -103,9 +103,9 @@ namespace OpenXMLWord
                     mainPart,
                     "C:/Users/elad1/Downloads/carbon (15).png",
                     ImagePartType.Png,
-                    new OpenXmlUtils.ImageOptions()
+                    new ImageOptions()
                     {
-                        Trans = new OpenXmlUtils.ImageOptions.Transform()
+                        Trans = new ImageOptions.Transform()
                         {
                             SizeX = .5f,
                             SizeY = .5f
