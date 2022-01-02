@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>0.0.1</PackageVersion>
+        <Title>OpenXMLWord</Title>
+        <Authors>Elad Ben Haim</Authors>
+        <Copyright>MIT</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DocumentFormat.OpenXml" Version="2.15.0" />
+    </ItemGroup>
+
+</Project>
