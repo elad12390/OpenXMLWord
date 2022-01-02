@@ -19,21 +19,6 @@ namespace OpenXMLWord
         public static IParagraphCreation CreateParagraph(this OpenXmlElement element, ParagraphStyleId styleId)
             => new ParagraphCreation(element, styleId);
 
-        public static TResult Apply<T, TResult>(this T t, Func<T, TResult> fn) where T : class where TResult : class
-            => t != null ? fn(t) : null;
-
-        public static TResult Apply<T, TResult>(this T? t, Func<T, TResult> fn) where T : struct where TResult : class
-            => t.HasValue ? fn(t.Value) : null;
-
-        public static bool Apply<T>(this T t, Func<T, bool> fn) where T : class
-            => t is {} && fn(t);
-
-        public static T? Apply<T>(this bool val, T newVal) where T : struct
-            => val ? (T?)newVal : null;
-
-        public static T Apply<T>(this bool? val, T newVal) where T : class
-            => val.HasValue && val.Value ? newVal : null;
-
         public static (MainDocumentPart mainPart, Body body, Header header, Footer footer) Initialize(this WordprocessingDocument doc, DocumentOptions options = null)
         {
             // Add a main document part. 
@@ -78,13 +63,26 @@ namespace OpenXMLWord
         public static Header AddHeader(this MainDocumentPart mainDocumentPart) => OpenXMLWord.AddHeader(mainDocumentPart);
 
         public static Footer AddFooter(this MainDocumentPart mainDocumentPart) => OpenXMLWord.AddFooter(mainDocumentPart);
+
+        internal static TResult Apply<T, TResult>(this T t, Func<T, TResult> fn) where T : class where TResult : class
+            => t != null ? fn(t) : null;
+
+        internal static TResult Apply<T, TResult>(this T? t, Func<T, TResult> fn) where T : struct where TResult : class
+            => t.HasValue ? fn(t.Value) : null;
+
+        internal static bool Apply<T>(this T t, Func<T, bool> fn) where T : class
+            => t is {} && fn(t);
+
+        internal static T? Apply<T>(this bool val, T newVal) where T : struct
+            => val ? (T?)newVal : null;
+
+        internal static T Apply<T>(this bool? val, T newVal) where T : class
+            => val.HasValue && val.Value ? newVal : null;
         
-        public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
+        internal static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
         {
             foreach(var item in enumeration)
-            {
                 action(item);
-            }
         }
     }
 }
