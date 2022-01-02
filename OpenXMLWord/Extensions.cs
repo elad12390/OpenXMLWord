@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -55,24 +56,35 @@ namespace OpenXMLWord
         }
         
         public static (Table newTable, Table oldTable) CloneTableByTitle(this OpenXmlElement element, string title) =>
-            OpenXmlUtils.CloneTableByTitle(element, title);
+            IOpenXMLUtils.CloneTableByTitle(element, title);
 
         public static Table FindTableByTitle(this OpenXmlElement element, string title) =>
-            OpenXmlUtils.FindTableByTitle(element, title);
+            IOpenXMLUtils.FindTableByTitle(element, title);
 
         public static void SetContentControl(this OpenXmlElement element, string tag, string value) =>
-            OpenXmlUtils.SetContentControl(element, tag, value);
+            IOpenXMLUtils.SetContentControl(element, tag, value);
 
         public static void SetContentControls(this OpenXmlElement element, Dictionary<string, string> tagValueDictionary) =>
-            OpenXmlUtils.SetContentControls(element, tagValueDictionary);
+            IOpenXMLUtils.SetContentControls(element, tagValueDictionary);
 
         public static void SetTableContentRows(this OpenXmlElement element, string tableTitle, List<Dictionary<string, string>> tableRows, int? maxRows = null) =>
-            OpenXmlUtils.SetTableContentRows(element, tableTitle, tableRows, maxRows);
+            IOpenXMLUtils.SetTableContentRows(element, tableTitle, tableRows, maxRows);
+
+        public static void SetContentControlImage(this OpenXmlElement elm, WordprocessingDocument doc, string tag, ImagePartType imageType, FileStream fileStream) =>
+            IOpenXMLUtils.SetContentControlImage(doc, elm, tag, imageType, fileStream);
 
         public static Body Body(this WordprocessingDocument wordDocument) => wordDocument?.MainDocumentPart?.Document.Body;
 
         public static Header AddHeader(this MainDocumentPart mainDocumentPart) => OpenXmlUtils.AddHeader(mainDocumentPart);
 
         public static Footer AddFooter(this MainDocumentPart mainDocumentPart) => OpenXmlUtils.AddFooter(mainDocumentPart);
+        
+        public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
+        {
+            foreach(var item in enumeration)
+            {
+                action(item);
+            }
+        }
     }
 }

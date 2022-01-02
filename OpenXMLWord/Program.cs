@@ -20,7 +20,7 @@ namespace OpenXMLWord
         private static void CreateDocumentFromTemplateExample()
         {
             // Create a document by supplying the filepath. 
-            using var wordDocument = WordprocessingDocument.CreateFromTemplate("D:/Work/Wanzy/Template3.dotx");
+            using var wordDocument = WordprocessingDocument.CreateFromTemplate("D:/Work/Wanzy/8.dotx");
             var tableRows = new List<Dictionary<string, string>>();
             tableRows.AddRange(Enumerable.Repeat(new Dictionary<string, string>()
             {
@@ -33,6 +33,12 @@ namespace OpenXMLWord
                 {"PersonalWords", string.Join(' ', GetNRandomStrings(25))},
                 {"StudentName", "Elad ben haim"}
             });
+            
+            using (var f = File.OpenRead("D:/Work/Wanzy/test.png"))
+                wordDocument.Body().SetContentControlImage(wordDocument, tag: "Pic1", imageType:ImagePartType.Png, fileStream: f);
+            
+            using (var f = File.OpenRead("D:/Work/Wanzy/test2.png"))
+                wordDocument.Body().SetContentControlImage(wordDocument, tag: "Pic2", imageType:ImagePartType.Png, fileStream: f);
             wordDocument.SaveAs("./Test.docx");
         }
 

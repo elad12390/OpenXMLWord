@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -53,8 +54,11 @@ namespace OpenXMLWord
         static void SetContentControls(OpenXmlElement element, Dictionary<string, string> tagValueDictionary) =>
             OpenXmlUtils.SetContentControls(element, tagValueDictionary);
 
-        static void SetContentControl(WordprocessingDocument wordDocument, string tag, string value) =>
-            OpenXmlUtils.SetContentControl(wordDocument?.MainDocumentPart?.Document.Body, tag, value);
+        static void SetContentControlImage(WordprocessingDocument doc, OpenXmlElement elm, string tag, ImagePartType imageType, FileStream fileStream) =>
+            OpenXmlUtils.SetContentControlImage(doc, elm, tag, imageType, fileStream);
+
+        static void SetContentControl(OpenXmlElement elm, string tag, string value) =>
+            OpenXmlUtils.SetContentControl(elm, tag, value);
 
         static (Table newTable, Table oldTable) CloneTableByTitle(OpenXmlElement element, string title) =>
             OpenXmlUtils.CloneTableByTitle(element, title);

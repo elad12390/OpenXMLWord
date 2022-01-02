@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -463,6 +465,23 @@ namespace OpenXMLWord
             var descendants = elements.SelectMany(element => element.Descendants<Text>()).Where(t => t is { });
             foreach (var descendant in descendants)
                 descendant.Text = value;
+        }
+        
+        // Set the content control image value by tag
+        public static void SetContentControlImage(WordprocessingDocument doc, OpenXmlElement elm, string tag, ImagePartType imageType, FileStream fileStream)
+        {
+            if (fileStream == null) throw new IOException("File was null, cannot load a null file into a content control");
+            
+            var mainPart = doc.MainDocumentPart;
+            var imagePart = mainPart?.AddImagePart(imageType);
+            if (imagePart == null) return;
+            
+            imagePart.FeedData(fileStream);
+            
+            elm.Descendants<SdtContentPicture>()
+                .Where(picControl => picControl.Parent?.GetFirstChild<Tag>()?.Val == tag && picControl.Parent?.Parent?.Descendants<A.Blip>().Any() == true)
+                .Select(picControl => picControl.Parent?.Parent?.Descendants<A.Blip>().FirstOrDefault())
+                .ForEach(blip => blip.Embed = mainPart.GetIdOfPart(imagePart));
         }
 
         // Set all content controls using the dictionary provided
