@@ -479,6 +479,21 @@ namespace OpenXMLWord
                 SetContentControl(elm, tag, value);
         }
 
+        public static T SelectElementByTag<T>(OpenXmlElement parent, string tag) where T : OpenXmlElement
+        {
+            return parent
+                .Descendants<T>()
+                .FirstOrDefault(elm => elm.Descendants<SdtElement>().Any(e => e.SdtProperties?.GetFirstChild<Tag>()?.Val == tag));
+        }
+
+        public static List<T> SelectElementsByTag<T>(OpenXmlElement parent, string tag) where T : OpenXmlElement
+        {
+            return parent
+                .Descendants<T>()
+                .Where(elm => elm.Descendants<SdtElement>().Any(e => e.SdtProperties?.GetFirstChild<Tag>()?.Val == tag))
+                .ToList();
+        }
+
         // Set the content control value by tag
         public static void SetContentControl(OpenXmlElement elm, string tag, string value)
         {
@@ -538,8 +553,34 @@ namespace OpenXMLWord
             }
         }
 
+        // Set all content controls using the dictionary provided
+        public static void CloneAndSetContent(OpenXmlElement element, List<Dictionary<string, string>> content)
+        {
+            var originalElement = element.CloneNode(true);
+            var clonedElement = element.CloneNode(true);
+            var parent = element.Parent;
+            if (parent is null) return;
+            
+            element.Remove();
+            foreach (var elmContent in content)
+            {
+                SetContentControls(clonedElement, elmContent);
+                parent.AppendChild(clonedElement);
+                clonedElement = originalElement.CloneNode(true);
+            }
+        }
+
         // Clone table
         public static (Table newTable, Table oldTable) CloneTableByTitle(OpenXmlElement element, string title)
+        {
+            var table = element.Descendants<Table>()
+                .FirstOrDefault(table => table.Descendants<TableCaption>().FirstOrDefault()?.Val == title);
+
+            return ((Table)table?.CloneNode(true), table);
+        }
+
+        // Clone table
+        public static (Table newTable, Table oldTable) CloneElementByTitle(OpenXmlElement element, string title)
         {
             var table = element.Descendants<Table>()
                 .FirstOrDefault(table => table.Descendants<TableCaption>().FirstOrDefault()?.Val == title);

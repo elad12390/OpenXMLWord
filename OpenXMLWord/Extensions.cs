@@ -84,5 +84,14 @@ namespace OpenXMLWord
             foreach(var item in enumeration)
                 action(item);
         }
+
+        public static T SelectElementByTag<T>(this OpenXmlElement parent, string tag) where T : OpenXmlElement =>
+            IOpenXMLWord.SelectElementByTag<T>(parent, tag);
+        
+        public static List<T> SelectElementsByTag<T>(this OpenXmlElement parent, string tag) where T : OpenXmlElement =>
+            IOpenXMLWord.SelectElementsByTag<T>(parent, tag);
+        
+        public static void CloneAndSetContent(this OpenXmlElement element, List<Dictionary<string, string>> content) =>
+            IOpenXMLWord.CloneAndSetContent(element, content);
     }
 }

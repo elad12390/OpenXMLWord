@@ -68,5 +68,14 @@ namespace OpenXMLWord
 
         static void SetTableContentRows(OpenXmlElement element, string tableTitle, List<Dictionary<string, string>> tableRows, int? maxRows = null) =>
             OpenXMLWord.SetTableContentRows(element, tableTitle, tableRows, maxRows);
+
+        public static T SelectElementByTag<T>(OpenXmlElement parent, string tag) where T : OpenXmlElement =>
+            OpenXMLWord.SelectElementByTag<T>(parent, tag);
+        
+        public static List<T> SelectElementsByTag<T>(OpenXmlElement parent, string tag) where T : OpenXmlElement =>
+            OpenXMLWord.SelectElementsByTag<T>(parent, tag);
+        
+        public static void CloneAndSetContent(OpenXmlElement element, List<Dictionary<string, string>> content) =>
+            OpenXMLWord.CloneAndSetContent(element, content);
     }
 }
