@@ -604,7 +604,7 @@ namespace OpenXMLWord
         public static void CloneAndSetContent(OpenXmlElement element, List<Dictionary<string, string>> content, bool createParagraphAfterClonedElement = false)
         {
             var originalElement = element.CloneNode(true);
-            var parent = originalElement.Parent;
+            var parent = element.Parent;
             if (parent is null) return;
             // clone original [element]
             
