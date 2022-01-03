@@ -459,9 +459,14 @@ namespace OpenXMLWord
                    && s.Elements<Style>().Any(st => st.StyleId == styleId && st.Type == StyleValues.Paragraph);
         }
 
-        // Return styleId that matches the styleName, or null when there's no match.
-        public static string GetStyleIdFromStyleName(WordprocessingDocument doc, string styleName,
-            StyleValues styleValue)
+        /// <summary>
+        /// Return styleId that matches the styleName and styleValue (style type), or null when there's no match.
+        /// </summary>
+        /// <param name="doc">word document</param>
+        /// <param name="styleName">The name of the style in the doc</param>
+        /// <param name="styleValue">The type of the style</param>
+        /// <returns>the style name</returns>
+        public static string GetStyleIdFromStyleName(WordprocessingDocument doc, string styleName, StyleValues styleValue)
         {
             var styles = doc?.MainDocumentPart?.StyleDefinitionsPart?.Styles;
             string styleId = styles?
@@ -472,30 +477,53 @@ namespace OpenXMLWord
             return styleId;
         }
 
-        // Set all content controls using the dictionary provided
-        public static void SetContentControls(OpenXmlElement elm, Dictionary<string, string> tagValueDictionary)
+        /// <summary>
+        /// Set all content controls using the dictionary provided
+        /// </summary>
+        /// <param name="ancestor">the ancestor element to search in</param>
+        /// <param name="tagValueDictionary">All tags(as key) and values(as value)</param>
+        public static void SetTextContentControls(OpenXmlElement ancestor, Dictionary<string, string> tagValueDictionary)
         {
             foreach (var (tag, value) in tagValueDictionary)
-                SetContentControl(elm, tag, value);
+                SetTextContentControl(ancestor, tag, value);
         }
 
-        public static T SelectElementByTag<T>(OpenXmlElement parent, string tag) where T : OpenXmlElement
+        /// <summary>
+        /// Select the first matched element by their Tag (not all elements have this Tag)
+        /// </summary>
+        /// <param name="ancestor">the ancestor element to search in</param>
+        /// <param name="tag">The tag to search for</param>
+        /// <typeparam name="T">The type of the element searched for</typeparam>
+        /// <returns>The element or null (if not found)</returns>
+        public static T SelectElementByTag<T>(OpenXmlElement ancestor, string tag) where T : OpenXmlElement
         {
-            return parent
+            return ancestor
                 .Descendants<T>()
                 .FirstOrDefault(elm => elm.Descendants<SdtElement>().Any(e => e.SdtProperties?.GetFirstChild<Tag>()?.Val == tag));
         }
 
-        public static List<T> SelectElementsByTag<T>(OpenXmlElement parent, string tag) where T : OpenXmlElement
+        /// <summary>
+        /// Select elements by their Tag (not all elements have this Tag)
+        /// </summary>
+        /// <param name="ancestor">the ancestor element to search in</param>
+        /// <param name="tag">The tag to search for</param>
+        /// <typeparam name="T">The type of the element searched for</typeparam>
+        /// <returns>list of matched elements or null (if not found)</returns>
+        public static List<T> SelectElementsByTag<T>(OpenXmlElement ancestor, string tag) where T : OpenXmlElement
         {
-            return parent
+            return ancestor
                 .Descendants<T>()
                 .Where(elm => elm.Descendants<SdtElement>().Any(e => e.SdtProperties?.GetFirstChild<Tag>()?.Val == tag))
                 .ToList();
         }
 
-        // Set the content control value by tag
-        public static void SetContentControl(OpenXmlElement elm, string tag, string value)
+        /// <summary>
+        /// Set content control value
+        /// </summary>
+        /// <param name="elm">the parent element to search in</param>
+        /// <param name="tag">the tag of the content control</param>
+        /// <param name="value">the text value</param>
+        public static void SetTextContentControl(OpenXmlElement elm, string tag, string value)
         {
             var elements = elm.Descendants<SdtElement>()
                 .Where(elm => elm.SdtProperties?.GetFirstChild<Tag>()?.Val == tag)
@@ -506,7 +534,15 @@ namespace OpenXMLWord
                 descendant.Text = value;
         }
 
-        // Set the content control image value by tag
+        /// <summary>
+        /// Set picture on a picture control by tag
+        /// </summary>
+        /// <param name="doc">The word document</param>
+        /// <param name="elm">The ancestor of the picture</param>
+        /// <param name="tag">The tag of the picture control</param>
+        /// <param name="imageType">Type of the image provided</param>
+        /// <param name="fileStream">The image file</param>
+        /// <exception cref="IOException">Will throw when given null stream</exception>
         public static void SetContentControlImage(WordprocessingDocument doc, OpenXmlElement elm, string tag,
             ImagePartType imageType, FileStream fileStream)
         {
@@ -526,7 +562,14 @@ namespace OpenXMLWord
                 .ForEach(blip => blip.Embed = mainPart.GetIdOfPart(imagePart));
         }
 
-        // Set all content controls using the dictionary provided
+        /// <summary>
+        /// Create a table with header, and rows multiplied by the contents provided
+        /// if the table is overflowing will create another table with the same header
+        /// </summary>
+        /// <param name="element">The element to replace in</param>
+        /// <param name="tableTitle">Title of the table to use</param>
+        /// <param name="tableRows">The data for each row</param>
+        /// <param name="maxRows">Max rows in a table</param>
         public static void SetTableContentRows(OpenXmlElement element, string tableTitle,
             List<Dictionary<string, string>> tableRows, int? maxRows = null)
         {
@@ -539,7 +582,7 @@ namespace OpenXMLWord
                 var row = tableRows[i];
                 var index = i;
                 var newRow = (TableRow)lastRow.CloneNode(true);
-                SetContentControls(newRow, row);
+                SetTextContentControls(newRow, row);
                 table.AppendChild(newRow);
                 if (maxRows == null || ((i + 1) % maxRows != 0) || (i + 1) >= tableRows.Count) continue;
 
@@ -553,24 +596,45 @@ namespace OpenXMLWord
             }
         }
 
-        // Set all content controls using the dictionary provided
-        public static void CloneAndSetContent(OpenXmlElement element, List<Dictionary<string, string>> content)
+        /// <summary>
+        /// Set all content controls using the dictionary provided
+        /// </summary>
+        /// <param name="element">The element to clone</param>
+        /// <param name="content">The content to fill inside the content controls</param>
+        /// <param name="createParagraphAfterClonedElement">Should create a paragraph between them or not</param>
+        public static void CloneAndSetContent(OpenXmlElement element, List<Dictionary<string, string>> content, bool createParagraphAfterClonedElement = false)
         {
             var originalElement = element.CloneNode(true);
-            var clonedElement = element.CloneNode(true);
-            var parent = element.Parent;
+            var parent = originalElement.Parent;
             if (parent is null) return;
+            // clone original [element]
             
-            element.Remove();
-            foreach (var elmContent in content)
+            for (var i = 0; i < content.Count; i++)
             {
-                SetContentControls(clonedElement, elmContent);
-                parent.AppendChild(clonedElement);
-                clonedElement = originalElement.CloneNode(true);
+                SetTextContentControls(element, content[i]); // Set the current element values
+                
+                if (i >= content.Count - 1) continue; // if there are more elements clone the element again
+                if (createParagraphAfterClonedElement)
+                {                 
+                    var p = parent.InsertAfter(new Paragraph(), element); // create a paragraph after the last element (optional) 
+                    element = originalElement.CloneNode(true); // clone another element from the original
+                    parent.InsertAfter(element, p); // insert the element after the new paragraph   
+                }
+                else
+                {
+                    // clone the element put before the last one 
+                    // set the next element to the one we are using
+                    element = parent.InsertAfter(element, originalElement.CloneNode(true));
+                }
             }
         }
 
-        // Clone table
+        /// <summary>
+        /// Clone a table by given title
+        /// </summary>
+        /// <param name="element">The parent element to search in his descendants</param>
+        /// <param name="title">The table title</param>
+        /// <returns>Tuple of the newTable, oldTable</returns>
         public static (Table newTable, Table oldTable) CloneTableByTitle(OpenXmlElement element, string title)
         {
             var table = element.Descendants<Table>()
@@ -579,16 +643,12 @@ namespace OpenXMLWord
             return ((Table)table?.CloneNode(true), table);
         }
 
-        // Clone table
-        public static (Table newTable, Table oldTable) CloneElementByTitle(OpenXmlElement element, string title)
-        {
-            var table = element.Descendants<Table>()
-                .FirstOrDefault(table => table.Descendants<TableCaption>().FirstOrDefault()?.Val == title);
-
-            return ((Table)table?.CloneNode(true), table);
-        }
-
-        // Clone table
+        /// <summary>
+        /// Find a table by it's title
+        /// </summary>
+        /// <param name="element">Parent element to search in his descendants</param>
+        /// <param name="title">The title of the table</param>
+        /// <returns>The table element</returns>
         public static Table FindTableByTitle(OpenXmlElement element, string title)
         {
             var table = element

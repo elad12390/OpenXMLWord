@@ -40,21 +40,61 @@ namespace OpenXMLWord
             return (mainPart, body, header, footer);
         }
         
+        /// <summary>
+        /// Clone a table by given title
+        /// </summary>
+        /// <param name="element">The parent element to search in his descendants</param>
+        /// <param name="title">The table title</param>
+        /// <returns>Tuple of the newTable, oldTable</returns>
         public static (Table newTable, Table oldTable) CloneTableByTitle(this OpenXmlElement element, string title) =>
             IOpenXMLWord.CloneTableByTitle(element, title);
 
+        /// <summary>
+        /// Find a table by it's title
+        /// </summary>
+        /// <param name="element">Parent element to search in his descendants</param>
+        /// <param name="title">The title of the table</param>
+        /// <returns>The table element</returns>
         public static Table FindTableByTitle(this OpenXmlElement element, string title) =>
             IOpenXMLWord.FindTableByTitle(element, title);
 
+        /// <summary>
+        /// Set content control value
+        /// </summary>
+        /// <param name="elm">the parent element to search in</param>
+        /// <param name="tag">the tag of the content control</param>
+        /// <param name="value">the text value</param>
         public static void SetContentControl(this OpenXmlElement element, string tag, string value) =>
-            IOpenXMLWord.SetContentControl(element, tag, value);
+            IOpenXMLWord.SetTextContentControl(element, tag, value);
 
-        public static void SetContentControls(this OpenXmlElement element, Dictionary<string, string> tagValueDictionary) =>
-            IOpenXMLWord.SetContentControls(element, tagValueDictionary);
+        /// <summary>
+        /// Set all content controls using the dictionary provided
+        /// </summary>
+        /// <param name="ancestor">the ancestor element to search in</param>
+        /// <param name="tagValueDictionary">All tags(as key) and values(as value)</param>
+        public static void SetContentControls(this OpenXmlElement ancestor, Dictionary<string, string> tagValueDictionary) =>
+            IOpenXMLWord.SetContentControls(ancestor, tagValueDictionary);
 
+        /// <summary>
+        /// Create a table with header, and rows multiplied by the contents provided
+        /// if the table is overflowing will create another table with the same header
+        /// </summary>
+        /// <param name="element">The element to replace in</param>
+        /// <param name="tableTitle">Title of the table to use</param>
+        /// <param name="tableRows">The data for each row</param>
+        /// <param name="maxRows">Max rows in a table</param>
         public static void SetTableContentRows(this OpenXmlElement element, string tableTitle, List<Dictionary<string, string>> tableRows, int? maxRows = null) =>
             IOpenXMLWord.SetTableContentRows(element, tableTitle, tableRows, maxRows);
 
+        /// <summary>
+        /// Set picture on a picture control by tag
+        /// </summary>
+        /// <param name="doc">The word document</param>
+        /// <param name="elm">The ancestor of the picture</param>
+        /// <param name="tag">The tag of the picture control</param>
+        /// <param name="imageType">Type of the image provided</param>
+        /// <param name="fileStream">The image file</param>
+        /// <exception cref="IOException">Will throw when given null stream</exception>
         public static void SetContentControlImage(this OpenXmlElement elm, WordprocessingDocument doc, string tag, ImagePartType imageType, FileStream fileStream) =>
             IOpenXMLWord.SetContentControlImage(doc, elm, tag, imageType, fileStream);
 
@@ -85,13 +125,33 @@ namespace OpenXMLWord
                 action(item);
         }
 
-        public static T SelectElementByTag<T>(this OpenXmlElement parent, string tag) where T : OpenXmlElement =>
-            IOpenXMLWord.SelectElementByTag<T>(parent, tag);
+        /// <summary>
+        /// Select the first matched element by their Tag (not all elements have this Tag)
+        /// </summary>
+        /// <param name="ancestor">the ancestor element to search in</param>
+        /// <param name="tag">The tag to search for</param>
+        /// <typeparam name="T">The type of the element searched for</typeparam>
+        /// <returns>The element or null (if not found)</returns>
+        public static T SelectElementByTag<T>(this OpenXmlElement ancestor, string tag) where T : OpenXmlElement =>
+            IOpenXMLWord.SelectElementByTag<T>(ancestor, tag);
         
-        public static List<T> SelectElementsByTag<T>(this OpenXmlElement parent, string tag) where T : OpenXmlElement =>
-            IOpenXMLWord.SelectElementsByTag<T>(parent, tag);
+        /// <summary>
+        /// Select elements by their Tag (not all elements have this Tag)
+        /// </summary>
+        /// <param name="ancestor">the ancestor element to search in</param>
+        /// <param name="tag">The tag to search for</param>
+        /// <typeparam name="T">The type of the element searched for</typeparam>
+        /// <returns>list of matched elements or null (if not found)</returns>
+        public static List<T> SelectElementsByTag<T>(this OpenXmlElement ancestor, string tag) where T : OpenXmlElement =>
+            IOpenXMLWord.SelectElementsByTag<T>(ancestor, tag);
         
-        public static void CloneAndSetContent(this OpenXmlElement element, List<Dictionary<string, string>> content) =>
+        /// <summary>
+        /// Set all content controls using the dictionary provided
+        /// </summary>
+        /// <param name="element">The element to clone</param>
+        /// <param name="content">The content to fill inside the content controls</param>
+        /// <param name="createParagraphAfterClonedElement">Should create a paragraph between them or not</param>
+        public static void CloneAndSetContent(this OpenXmlElement element, List<Dictionary<string, string>> content, bool createParagraphAfterClonedElement = false) =>
             IOpenXMLWord.CloneAndSetContent(element, content);
     }
 }
