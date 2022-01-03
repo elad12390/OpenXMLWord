@@ -328,8 +328,7 @@ namespace OpenXMLWord
 
             return newFooterPart.Footer;
         }
-
-
+        
         public static Run CreateImage(MainDocumentPart mainPart, string imageUrl, ImagePartType imageType,
             ImageOptions ops = null)
         {
@@ -622,9 +621,9 @@ namespace OpenXMLWord
                 }
                 else
                 {
-                    // clone the element put before the last one 
+                    // clone the element put after the last one 
                     // set the next element to the one we are using
-                    element = parent.InsertAfter(element, originalElement.CloneNode(true));
+                    element = parent.InsertAfter(originalElement.CloneNode(true), element);
                 }
             }
         }

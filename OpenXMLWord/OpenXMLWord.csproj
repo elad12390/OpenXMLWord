@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>0.0.4</PackageVersion>
+        <PackageVersion>0.0.6</PackageVersion>
         <Title>OpenXMLWord</Title>
         <Authors>Elad Ben Haim</Authors>
         <Copyright>MIT</Copyright>
